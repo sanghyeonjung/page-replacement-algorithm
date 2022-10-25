@@ -1,12 +1,14 @@
 #include<iostream>
 #include<algorithm>
+#include<iomanip>
+
 using namespace std;
+
 void FIFO();
 void OPT();
 void LRU();
 void LFU();
 void MFU();
-void NUR();
 void init();
 void printfault();
 void print(int num, int f);
@@ -14,7 +16,7 @@ int check(int num);
 
 int faultcnt = 0; //페이지 부재 횟수
 int arr[100001]; //참조순서
-int page[100]; //현재 페이지
+int page[100]; //현재 페이지 
 int pagenum = 0; //페이지 개수
 int refernum = 0; //참조 개수
 int algorithmnum = 0;
@@ -25,13 +27,16 @@ int main() {
 	cout << "참조 개수 : ";
 	cin >> refernum;
 	cout << "참조 순서 입력 : ";
+
 	for (int k = 0; k < refernum; k++)
 	{
 		cin >> arr[k];
 	}
-	cout << "페이지 교체 알고리즘 선택\n1.FIFO(First In First Out)\n2.OPT(Optimal)\n3.LRU(Least Recently Used)\n4.LFU(Least Frequently Used)\n5.MFU(Most Frequently used)\n6.NUR(Not Used Recently)\n번호 입력 : ";
+
+	cout << "페이지 교체 알고리즘 선택\n1.FIFO(First In First Out)\n2.OPT(Optimal)\n3.LRU(Least Recently Used)\n4.LFU(Least Frequently Used)\n5.MFU(Most Frequently used)\n번호 입력 : ";
 	cin >> algorithmnum;
 	init();
+
 	switch (algorithmnum) {
 	case 1:
 		FIFO();
@@ -53,17 +58,14 @@ int main() {
 		MFU();
 		printfault();
 		break;
-	case 6:
-		NUR();
-		printfault();
-		break;
 	default:
 		break;
 	}
+
 }
 void FIFO()
 {
-	int changeindex = 0;
+	int changeindex = 0; //바꿀 인덱스 설정
 	for (int k = 0; k < pagenum; k++)
 	{
 		page[k] = arr[k];
@@ -74,8 +76,9 @@ void FIFO()
 		int fault = 0;
 		if (check(arr[k]) != 1)
 		{
-			page[changeindex] = arr[k];
-			fault = 1;
+			page[changeindex]
+				= arr[k];
+			fault = 1; // 중복되는 페이지가 없다면 페이지 부재 발생
 			if (changeindex == pagenum - 1)
 			{
 				changeindex = 0;
@@ -108,7 +111,7 @@ void OPT()
 			for (int i = 0; i < pagenum; i++)
 			{
 				int cnt = 0;
-				for (int j = k+1; j < refernum; j++)
+				for (int j = k+1; j < refernum; j++) // 거리 측정
 				{
 					if (page[i] == arr[j])
 					{
@@ -124,7 +127,7 @@ void OPT()
 			}
 			int earlynum = 100000;
 			int selectnum = -1;
-			for (int i = 0; i < pagenum; i++)
+			for (int i = 0; i < pagenum; i++) //거리가 제일 긴 것 중 가장 빨리 들어온 페이지 교체
 			{
 				if (dis[i] == max)
 				{
@@ -159,7 +162,7 @@ void LRU()
 		{
 			int earlynum = 100000;
 			int selectnum = -1;
-			for (int i = 0; i < pagenum; i++)
+			for (int i = 0; i < pagenum; i++) // 가장 먼저 들어온 페이지를 찾아서 교체
 			{
 				if (earlynum > put[i])
 				{
@@ -303,14 +306,10 @@ void MFU()
 	}
 }
 
-void NUR()
-{
 
-}
-
-int check(int num)
+int check(int num) //페이지 부재가 발생하는 코드
 {
-	for (int k = 0; k < pagenum; k++)
+	for (int k = 0; k < pagenum; k++) 
 	{
 		if (page[k] == num)
 		{
@@ -320,7 +319,7 @@ int check(int num)
 	return -1;
 }
 
-void init()
+void init() //페이지 값 초기화
 {
 	for (int k = 0; k < pagenum; k++)
 	{
@@ -328,29 +327,29 @@ void init()
 	}
 }
 
-void print(int num, int f)
+void print(int num, int f) //페이지 상태 출력
 {
 	cout << num+1 << " : ";
 	for (int k = 0; k < pagenum; k++)
 	{
 		if (page[k] == -1)
 		{
-			cout << "N ";
+			cout << setw(3) << "N";
 		}
 		else
 		{
-			cout << page[k] << " ";
+			cout << setw(3) << page[k];
 		}
 	}
 	if (f == 1)
 	{
 		faultcnt++;
-		cout << "PAGE FAULT";
+		cout << setw(3) << "   PAGE FAULT";
 	}
 	cout << "\n";
 }
 
-void printfault()
+void printfault() //페이지 부재 횟수 출력
 {
 	cout << "페이지 부재 : " << faultcnt << " 번";
 }
